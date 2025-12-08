@@ -101,11 +101,11 @@ const Support = () => {
 
     return (
         <Layout>
-            <div style={{ display: 'flex', height: 'caLc(100vh - 140px)', background: 'white', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', height: 'caLc(100vh - 140px)', background: 'var(--white)', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', overflow: 'hidden' }}>
 
                 {/* Sidebar: Conversation List */}
                 <div style={{ width: '300px', borderRight: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ padding: '1rem', background: '#f0f2f5', borderBottom: '1px solid var(--border-color)' }}>
+                    <div style={{ padding: '1rem', background: 'var(--card-bg)', borderBottom: '1px solid var(--border-color)' }}>
                         <h3 style={{ margin: 0, color: 'var(--text-color)' }}>Conversas</h3>
                     </div>
 
@@ -116,17 +116,17 @@ const Support = () => {
                                 onClick={() => setSelectedContact(conv)}
                                 style={{
                                     padding: '1rem',
-                                    borderBottom: '1px solid #f0f0f0',
+                                    borderBottom: '1px solid var(--border-color)',
                                     cursor: 'pointer',
-                                    background: selectedContact?.id_contato === conv.id_contato ? '#e3f2fd' : 'white',
+                                    background: selectedContact?.id_contato === conv.id_contato ? 'var(--badge-bg)' : 'var(--white)',
                                     transition: 'background 0.2s'
                                 }}
                             >
                                 <div style={{ fontWeight: 'bold', marginBottom: '0.3rem' }}>{conv.nome_contato}</div>
-                                <div style={{ fontSize: '0.85rem', color: '#666', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {conv.ultima_mensagem || <i>Nenhuma mensagem</i>}
                                 </div>
-                                <div style={{ fontSize: '0.75rem', color: '#999', marginTop: '0.3rem', textAlign: 'right' }}>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.3rem', textAlign: 'right' }}>
                                     {conv.data_ultima_mensagem ? new Date(conv.data_ultima_mensagem).toLocaleDateString() : ''}
                                 </div>
                             </div>
@@ -135,13 +135,13 @@ const Support = () => {
                 </div>
 
                 {/* Main: Chat Window */}
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#e5ddd5' }}> {/* WhatsApp BG Color */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--card-bg)' }}> {/* WhatsApp BG Color */}
                     {selectedContact ? (
                         <>
                             {/* Chat Header */}
-                            <div style={{ padding: '0.8rem 1rem', background: '#f0f2f5', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ padding: '0.8rem 1rem', background: 'var(--white)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#ccc', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
+                                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--badge-bg)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'var(--text-secondary)' }}>
                                         {selectedContact.nome_contato.charAt(0)}
                                     </div>
                                     <span style={{ fontWeight: 'bold' }}>{selectedContact.nome_contato}</span>
@@ -158,7 +158,8 @@ const Support = () => {
                                         key={index}
                                         style={{
                                             alignSelf: msg.direcao === 'Saida' ? 'flex-end' : 'flex-start',
-                                            background: msg.direcao === 'Saida' ? '#dcf8c6' : 'white',
+                                            background: msg.direcao === 'Saida' ? 'var(--success)' : 'var(--white)',
+                                            color: msg.direcao === 'Saida' ? 'white' : 'var(--text-primary)',
                                             padding: '0.5rem 0.8rem',
                                             borderRadius: '8px',
                                             maxWidth: '60%',
@@ -167,7 +168,7 @@ const Support = () => {
                                         }}
                                     >
                                         <div style={{ fontSize: '0.95rem' }}>{msg.texto}</div>
-                                        <div style={{ fontSize: '0.7rem', color: '#999', textAlign: 'right', marginTop: '4px' }}>
+                                        <div style={{ fontSize: '0.7rem', color: msg.direcao === 'Saida' ? 'rgba(255,255,255,0.7)' : 'var(--text-secondary)', textAlign: 'right', marginTop: '4px' }}>
                                             {new Date(msg.data_hora).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                             {msg.direcao === 'Saida' && <span style={{ marginLeft: '5px' }}>✓✓</span>}
                                         </div>
@@ -177,7 +178,7 @@ const Support = () => {
                             </div>
 
                             {/* Input Area */}
-                            <div style={{ padding: '1rem', background: '#f0f2f5', display: 'flex', gap: '10px' }}>
+                            <div style={{ padding: '1rem', background: 'var(--white)', display: 'flex', gap: '10px' }}>
                                 <form onSubmit={handleSendMessage} style={{ display: 'flex', width: '100%', gap: '10px' }}>
                                     <input
                                         type="text"
@@ -194,7 +195,7 @@ const Support = () => {
                             </div>
                         </>
                     ) : (
-                        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', color: '#888' }}>
+                        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', color: 'var(--text-secondary)' }}>
                             <h2>CRM Chat</h2>
                             <p>Selecione um contato para iniciar o atendimento.</p>
                         </div>

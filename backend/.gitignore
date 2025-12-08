@@ -1,0 +1,37 @@
+# ===========================================
+# AgilizaCRM - Git Ignore
+# ===========================================
+
+# ============== Ambiente Python ==============
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+env/
+.env
+
+# ============== IDE ==============
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ============== Logs ==============
+*.log
+logs/
+
+# ============== OS ==============
+.DS_Store
+Thumbs.db
+
+# ============== Segurança ==============
+# NUNCA commite arquivos com senhas/chaves!
+.env
+.env.local
+.env.*.local
+*.pem
+*.key

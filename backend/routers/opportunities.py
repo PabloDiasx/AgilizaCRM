@@ -14,18 +14,17 @@ class StageResponse(BaseModel):
     id_estagio: int
     nome_estagio: str
     ordem: int
-    class Config:
-        orm_mode = True
+    
+    model_config = {"from_attributes": True}
 
 class OpportunityResponse(BaseModel):
     id_oportunidade: int
     nome_oportunidade: str
     valor_estimado: float
     id_estagio_atual: int
-    nome_contato: str # Flattened for easier display
+    nome_contato: str  # Flattened for easier display
     
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 @router.get("/pipeline", response_model=List[StageResponse])
 def get_pipeline_stages(funnel_id: Optional[int] = None, db: Session = Depends(database.get_db), user_id: int = Depends(auth.get_current_user_id)):

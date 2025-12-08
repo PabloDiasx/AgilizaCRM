@@ -15,12 +15,12 @@ const Header = () => {
         <header style={{
             height: '70px',
             backgroundColor: 'var(--white)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+            boxShadow: 'var(--shadow)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '0 2rem',
-            marginLeft: '260px', // width of sidebar
+            marginLeft: '90px', // width of sidebar
             position: 'sticky',
             top: 0,
             zIndex: 90
@@ -44,7 +44,7 @@ const Header = () => {
                 }}>
                     {userName.charAt(0).toUpperCase()}
                 </div>
-                <span style={{ fontWeight: 500 }}>{userName}</span>
+                <span style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{userName}</span>
             </div>
         </header>
     );

@@ -15,8 +15,8 @@ class FunnelCreate(BaseModel):
 class FunnelResponse(BaseModel):
     id_funil: int
     nome_funil: str
-    class Config:
-        orm_mode = True
+    
+    model_config = {"from_attributes": True}
 
 @router.get("/", response_model=List[FunnelResponse])
 def read_funnels(db: Session = Depends(database.get_db), user_id: int = Depends(auth.get_current_user_id)):

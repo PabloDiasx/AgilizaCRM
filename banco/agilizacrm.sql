@@ -1,68 +1,52 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
+-- ============================================================
+-- AgilizaCRM - Banco de Dados v2.0 (InnoDB + Foreign Keys)
+-- ============================================================
+-- Migrado de MyISAM para InnoDB para suporte a:
+--   ✅ Foreign Keys (integridade referencial)
+--   ✅ Transações ACID
+--   ✅ Row-level locking (melhor concorrência)
+--   ✅ Crash recovery automático
+-- ============================================================
 -- Host: 127.0.0.1:3306
--- Tempo de geração: 07/12/2025 às 00:22
 -- Versão do servidor: 9.1.0
--- Versão do PHP: 8.3.14
+-- Data da migração: 07/12/2025
+-- ============================================================
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET FOREIGN_KEY_CHECKS = 0;  -- Desativa temporariamente para permitir DROP/CREATE
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Banco de dados: `agilizacrm`
---
+-- ============================================================
+-- CRIAÇÃO DO BANCO DE DADOS
+-- ============================================================
 CREATE DATABASE IF NOT EXISTS `agilizacrm` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE `agilizacrm`;
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `atividades`
---
-
-DROP TABLE IF EXISTS `atividades`;
-CREATE TABLE IF NOT EXISTS `atividades` (
-  `id_atividade` int NOT NULL AUTO_INCREMENT,
-  `id_oportunidade` int DEFAULT NULL,
-  `id_contato` int NOT NULL,
-  `id_usuario_criador` int NOT NULL,
-  `tipo` enum('Ligacao','Reuniao','Email','Tarefa','Lembrete') NOT NULL,
-  `descricao` text,
-  `data_hora_agendada` timestamp NULL DEFAULT NULL,
-  `concluida` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id_atividade`),
-  KEY `id_oportunidade` (`id_oportunidade`),
-  KEY `id_contato` (`id_contato`),
-  KEY `id_usuario_criador` (`id_usuario_criador`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- ============================================================
+-- TABELAS "PAI" (sem dependências)
+-- Estas tabelas são referenciadas por outras, então criamos primeiro
+-- ============================================================
 
 -- --------------------------------------------------------
-
---
--- Estrutura para tabela `cargos`
---
-
+-- Tabela: cargos
+-- Propósito: Define os papéis/permissões dos usuários
+-- Referenciada por: usuarios
+-- --------------------------------------------------------
 DROP TABLE IF EXISTS `cargos`;
-CREATE TABLE IF NOT EXISTS `cargos` (
+CREATE TABLE `cargos` (
   `id_cargo` int NOT NULL AUTO_INCREMENT,
   `nome_cargo` varchar(50) NOT NULL,
   `permissoes` text,
   PRIMARY KEY (`id_cargo`),
   UNIQUE KEY `nome_cargo` (`nome_cargo`)
-) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Despejando dados para a tabela `cargos`
---
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Cargos e permissões do sistema';
 
 INSERT INTO `cargos` (`id_cargo`, `nome_cargo`, `permissoes`) VALUES
 (1, 'Admin', 'all'),
@@ -71,13 +55,12 @@ INSERT INTO `cargos` (`id_cargo`, `nome_cargo`, `permissoes`) VALUES
 (4, 'Suporte', 'standard');
 
 -- --------------------------------------------------------
-
---
--- Estrutura para tabela `contas`
---
-
+-- Tabela: contas
+-- Propósito: Empresas/clientes cadastrados
+-- Referenciada por: contatos
+-- --------------------------------------------------------
 DROP TABLE IF EXISTS `contas`;
-CREATE TABLE IF NOT EXISTS `contas` (
+CREATE TABLE `contas` (
   `id_conta` int NOT NULL AUTO_INCREMENT,
   `nome_empresa` varchar(150) NOT NULL,
   `cnpj` varchar(14) DEFAULT NULL,
@@ -86,11 +69,8 @@ CREATE TABLE IF NOT EXISTS `contas` (
   `cidade` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id_conta`),
   UNIQUE KEY `cnpj` (`cnpj`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Despejando dados para a tabela `contas`
---
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Empresas e contas de clientes';
 
 INSERT INTO `contas` (`id_conta`, `nome_empresa`, `cnpj`, `setor`, `endereco`, `cidade`) VALUES
 (1, 'Tech Solutions Ltda', NULL, 'Tecnologia', NULL, 'São Paulo'),
@@ -105,13 +85,120 @@ INSERT INTO `contas` (`id_conta`, `nome_empresa`, `cnpj`, `setor`, `endereco`, `
 (10, 'Escola Futuro', NULL, 'Indústria', 'Rua Exemplo, 123', 'Rio de Janeiro');
 
 -- --------------------------------------------------------
+-- Tabela: funisdevenda
+-- Propósito: Funis de venda (pipelines)
+-- Referenciada por: estagiosdefunil
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `funisdevenda`;
+CREATE TABLE `funisdevenda` (
+  `id_funil` int NOT NULL AUTO_INCREMENT,
+  `nome_funil` varchar(100) NOT NULL,
+  PRIMARY KEY (`id_funil`),
+  UNIQUE KEY `nome_funil` (`nome_funil`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Funis de venda configuráveis';
 
---
--- Estrutura para tabela `contatos`
---
+INSERT INTO `funisdevenda` (`id_funil`, `nome_funil`) VALUES
+(1, 'Vendas Padrão');
 
+-- --------------------------------------------------------
+-- Tabela: campanhas
+-- Propósito: Campanhas de marketing
+-- Referenciada por: ninguém
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `campanhas`;
+CREATE TABLE `campanhas` (
+  `id_campanha` int NOT NULL AUTO_INCREMENT,
+  `nome_campanha` varchar(150) NOT NULL,
+  `canal` varchar(50) NOT NULL,
+  `status` enum('Ativa','Pausada','Finalizada') NOT NULL DEFAULT 'Ativa',
+  `data_criacao` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_campanha`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Campanhas de marketing';
+
+-- ============================================================
+-- TABELAS "FILHAS" NÍVEL 1 (dependem das tabelas pai)
+-- ============================================================
+
+-- --------------------------------------------------------
+-- Tabela: usuarios
+-- Propósito: Usuários do sistema
+-- Depende de: cargos
+-- Referenciada por: contatos, oportunidades, atividades, logsdeauditoria
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `usuarios`;
+CREATE TABLE `usuarios` (
+  `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha_hash` varchar(255) NOT NULL,
+  `id_cargo` int NOT NULL,
+  `ativo` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id_usuario`),
+  UNIQUE KEY `email` (`email`),
+  KEY `idx_usuarios_cargo` (`id_cargo`),
+  
+  -- 🔑 FOREIGN KEY: Garante que o cargo existe
+  -- ON DELETE RESTRICT: Impede deletar cargo se houver usuários vinculados
+  -- ON UPDATE CASCADE: Se o id_cargo mudar, atualiza aqui também
+  CONSTRAINT `fk_usuarios_cargo` 
+    FOREIGN KEY (`id_cargo`) REFERENCES `cargos` (`id_cargo`)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE
+    
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Usuários do sistema CRM';
+
+INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `senha_hash`, `id_cargo`, `ativo`) VALUES
+(1, 'Administrador', 'admin@agilizacrm.com', '$argon2id$v=19$m=65536,t=3,p=4$7d07R8g55zwnZExpDQEAoA$DJO5SXrBrxMGAla1QEzjUuLaNxQPMgKzTWyX165AUbQ', 1, 1),
+(2, 'João Vendedor', 'vendedor@agilizacrm.com', '$argon2id$v=19$m=65536,t=3,p=4$UWpNSSlFSGltDeE8p7S2tg$NARlAEwtjpp15oyO+efkgq+8TtCp6ua0I8tkpHX4D2k', 2, 1);
+
+-- --------------------------------------------------------
+-- Tabela: estagiosdefunil
+-- Propósito: Estágios dentro de cada funil
+-- Depende de: funisdevenda
+-- Referenciada por: oportunidades
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `estagiosdefunil`;
+CREATE TABLE `estagiosdefunil` (
+  `id_estagio` int NOT NULL AUTO_INCREMENT,
+  `id_funil` int NOT NULL,
+  `nome_estagio` varchar(100) NOT NULL,
+  `ordem` int NOT NULL,
+  PRIMARY KEY (`id_estagio`),
+  UNIQUE KEY `uk_funil_estagio` (`id_funil`, `nome_estagio`),
+  KEY `idx_estagios_funil` (`id_funil`),
+  
+  -- 🔑 FOREIGN KEY: Garante que o funil existe
+  -- ON DELETE CASCADE: Se deletar o funil, deleta os estágios também
+  CONSTRAINT `fk_estagios_funil` 
+    FOREIGN KEY (`id_funil`) REFERENCES `funisdevenda` (`id_funil`)
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE
+    
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Estágios do funil de vendas';
+
+INSERT INTO `estagiosdefunil` (`id_estagio`, `id_funil`, `nome_estagio`, `ordem`) VALUES
+(1, 1, 'Prospecção', 1),
+(2, 1, 'Qualificação', 2),
+(3, 1, 'Proposta', 3),
+(4, 1, 'Negociação', 4),
+(5, 1, 'Fechamento', 5);
+
+-- ============================================================
+-- TABELAS "FILHAS" NÍVEL 2 (dependem das tabelas nível 1)
+-- ============================================================
+
+-- --------------------------------------------------------
+-- Tabela: contatos
+-- Propósito: Pessoas de contato (leads/clientes)
+-- Depende de: contas, usuarios
+-- Referenciada por: oportunidades, atividades, historicodemensagens
+-- --------------------------------------------------------
 DROP TABLE IF EXISTS `contatos`;
-CREATE TABLE IF NOT EXISTS `contatos` (
+CREATE TABLE `contatos` (
   `id_contato` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(100) NOT NULL,
   `email` varchar(100) DEFAULT NULL,
@@ -122,13 +209,25 @@ CREATE TABLE IF NOT EXISTS `contatos` (
   PRIMARY KEY (`id_contato`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `telefone` (`telefone`),
-  KEY `id_conta` (`id_conta`),
-  KEY `id_proprietario` (`id_proprietario`)
-) ENGINE=MyISAM AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Despejando dados para a tabela `contatos`
---
+  KEY `idx_contatos_conta` (`id_conta`),
+  KEY `idx_contatos_proprietario` (`id_proprietario`),
+  
+  -- 🔑 FOREIGN KEY: Conta pode ser NULL (contato sem empresa)
+  -- ON DELETE SET NULL: Se deletar a conta, o contato continua existindo
+  CONSTRAINT `fk_contatos_conta` 
+    FOREIGN KEY (`id_conta`) REFERENCES `contas` (`id_conta`)
+    ON DELETE SET NULL 
+    ON UPDATE CASCADE,
+    
+  -- 🔑 FOREIGN KEY: Proprietário é obrigatório
+  -- ON DELETE RESTRICT: Não pode deletar usuário se tiver contatos
+  CONSTRAINT `fk_contatos_proprietario` 
+    FOREIGN KEY (`id_proprietario`) REFERENCES `usuarios` (`id_usuario`)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE
+    
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Contatos e leads do CRM';
 
 INSERT INTO `contatos` (`id_contato`, `nome`, `email`, `telefone`, `id_conta`, `id_proprietario`, `data_criacao`) VALUES
 (1, 'Carlos Silva', 'carlos@techsolutions.com', '11999990001', 1, 1, '2025-12-07 00:07:07'),
@@ -162,98 +261,18 @@ INSERT INTO `contatos` (`id_contato`, `nome`, `email`, `telefone`, `id_conta`, `
 (29, 'Bruno Pereira', 'bruno.pereira123@exemplo.com', '11999990123', 6, 2, '2025-12-07 00:13:21'),
 (30, 'Larissa Pereira', 'larissa.pereira124@exemplo.com', '11999990124', 7, 1, '2025-12-07 00:13:21');
 
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `estagiosdefunil`
---
-
-DROP TABLE IF EXISTS `estagiosdefunil`;
-CREATE TABLE IF NOT EXISTS `estagiosdefunil` (
-  `id_estagio` int NOT NULL AUTO_INCREMENT,
-  `id_funil` int NOT NULL,
-  `nome_estagio` varchar(100) NOT NULL,
-  `ordem` int NOT NULL,
-  PRIMARY KEY (`id_estagio`),
-  UNIQUE KEY `id_funil` (`id_funil`,`nome_estagio`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Despejando dados para a tabela `estagiosdefunil`
---
-
-INSERT INTO `estagiosdefunil` (`id_estagio`, `id_funil`, `nome_estagio`, `ordem`) VALUES
-(1, 1, 'Prospecção', 1),
-(2, 1, 'Qualificação', 2),
-(3, 1, 'Proposta', 3),
-(4, 1, 'Negociação', 4),
-(5, 1, 'Fechamento', 5);
+-- ============================================================
+-- TABELAS "FILHAS" NÍVEL 3 (dependem das tabelas nível 2)
+-- ============================================================
 
 -- --------------------------------------------------------
-
---
--- Estrutura para tabela `funisdevenda`
---
-
-DROP TABLE IF EXISTS `funisdevenda`;
-CREATE TABLE IF NOT EXISTS `funisdevenda` (
-  `id_funil` int NOT NULL AUTO_INCREMENT,
-  `nome_funil` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_funil`),
-  UNIQUE KEY `nome_funil` (`nome_funil`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Despejando dados para a tabela `funisdevenda`
---
-
-INSERT INTO `funisdevenda` (`id_funil`, `nome_funil`) VALUES
-(1, 'Vendas Padrão');
-
+-- Tabela: oportunidades
+-- Propósito: Negócios/deals em andamento
+-- Depende de: contatos, estagiosdefunil, usuarios
+-- Referenciada por: atividades
 -- --------------------------------------------------------
-
---
--- Estrutura para tabela `historicodemensagens`
---
-
-DROP TABLE IF EXISTS `historicodemensagens`;
-CREATE TABLE IF NOT EXISTS `historicodemensagens` (
-  `id_mensagem` int NOT NULL AUTO_INCREMENT,
-  `id_contato` int NOT NULL,
-  `tipo_canal` enum('WhatsApp','Email','Chatbot') NOT NULL,
-  `texto_original` text NOT NULL,
-  `sentimento_ia` varchar(10) DEFAULT NULL,
-  `direcao` enum('Entrada','Saida') NOT NULL,
-  `data_hora` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_mensagem`),
-  KEY `id_contato` (`id_contato`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `logsdeauditoria`
---
-
-DROP TABLE IF EXISTS `logsdeauditoria`;
-CREATE TABLE IF NOT EXISTS `logsdeauditoria` (
-  `id_log` int NOT NULL AUTO_INCREMENT,
-  `id_usuario` int DEFAULT NULL,
-  `data_hora` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `acao` varchar(255) NOT NULL,
-  `detalhes` text,
-  PRIMARY KEY (`id_log`),
-  KEY `id_usuario` (`id_usuario`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura para tabela `oportunidades`
---
-
 DROP TABLE IF EXISTS `oportunidades`;
-CREATE TABLE IF NOT EXISTS `oportunidades` (
+CREATE TABLE `oportunidades` (
   `id_oportunidade` int NOT NULL AUTO_INCREMENT,
   `nome_oportunidade` varchar(255) NOT NULL,
   `valor_estimado` decimal(10,2) NOT NULL DEFAULT '0.00',
@@ -263,14 +282,33 @@ CREATE TABLE IF NOT EXISTS `oportunidades` (
   `data_fechamento_prevista` date DEFAULT NULL,
   `status` enum('Aberta','Ganha','Perdida') NOT NULL DEFAULT 'Aberta',
   PRIMARY KEY (`id_oportunidade`),
-  KEY `id_contato_principal` (`id_contato_principal`),
-  KEY `id_estagio_atual` (`id_estagio_atual`),
-  KEY `id_usuario_responsavel` (`id_usuario_responsavel`)
-) ENGINE=MyISAM AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Despejando dados para a tabela `oportunidades`
---
+  KEY `idx_oport_contato` (`id_contato_principal`),
+  KEY `idx_oport_estagio` (`id_estagio_atual`),
+  KEY `idx_oport_responsavel` (`id_usuario_responsavel`),
+  
+  -- 🔑 FOREIGN KEY: Contato principal é obrigatório
+  -- ON DELETE RESTRICT: Não pode deletar contato se tiver oportunidades
+  CONSTRAINT `fk_oport_contato` 
+    FOREIGN KEY (`id_contato_principal`) REFERENCES `contatos` (`id_contato`)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE,
+    
+  -- 🔑 FOREIGN KEY: Estágio do funil
+  -- ON DELETE RESTRICT: Não pode deletar estágio se tiver oportunidades nele
+  CONSTRAINT `fk_oport_estagio` 
+    FOREIGN KEY (`id_estagio_atual`) REFERENCES `estagiosdefunil` (`id_estagio`)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE,
+    
+  -- 🔑 FOREIGN KEY: Vendedor responsável
+  -- ON DELETE RESTRICT: Não pode deletar vendedor se tiver oportunidades
+  CONSTRAINT `fk_oport_responsavel` 
+    FOREIGN KEY (`id_usuario_responsavel`) REFERENCES `usuarios` (`id_usuario`)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE
+    
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Oportunidades de venda (deals)';
 
 INSERT INTO `oportunidades` (`id_oportunidade`, `nome_oportunidade`, `valor_estimado`, `id_contato_principal`, `id_estagio_atual`, `id_usuario_responsavel`, `data_fechamento_prevista`, `status`) VALUES
 (1, 'Licença Software Anual', 12000.00, 1, 3, 1, '2026-01-05', 'Aberta'),
@@ -299,33 +337,117 @@ INSERT INTO `oportunidades` (`id_oportunidade`, `nome_oportunidade`, `valor_esti
 (24, 'App Mobile - 20', 21012.00, 30, 5, 2, '2025-12-09', 'Ganha');
 
 -- --------------------------------------------------------
+-- Tabela: atividades
+-- Propósito: Tarefas e atividades agendadas
+-- Depende de: oportunidades (opcional), contatos, usuarios
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `atividades`;
+CREATE TABLE `atividades` (
+  `id_atividade` int NOT NULL AUTO_INCREMENT,
+  `id_oportunidade` int DEFAULT NULL,
+  `id_contato` int NOT NULL,
+  `id_usuario_criador` int NOT NULL,
+  `tipo` enum('Ligacao','Reuniao','Email','Tarefa','Lembrete') NOT NULL,
+  `descricao` text,
+  `data_hora_agendada` timestamp NULL DEFAULT NULL,
+  `concluida` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id_atividade`),
+  KEY `idx_ativ_oportunidade` (`id_oportunidade`),
+  KEY `idx_ativ_contato` (`id_contato`),
+  KEY `idx_ativ_criador` (`id_usuario_criador`),
+  
+  -- 🔑 FOREIGN KEY: Oportunidade é opcional
+  -- ON DELETE SET NULL: Se deletar a oportunidade, atividade continua
+  CONSTRAINT `fk_ativ_oportunidade` 
+    FOREIGN KEY (`id_oportunidade`) REFERENCES `oportunidades` (`id_oportunidade`)
+    ON DELETE SET NULL 
+    ON UPDATE CASCADE,
+    
+  -- 🔑 FOREIGN KEY: Contato é obrigatório
+  CONSTRAINT `fk_ativ_contato` 
+    FOREIGN KEY (`id_contato`) REFERENCES `contatos` (`id_contato`)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE,
+    
+  -- 🔑 FOREIGN KEY: Criador da atividade
+  CONSTRAINT `fk_ativ_criador` 
+    FOREIGN KEY (`id_usuario_criador`) REFERENCES `usuarios` (`id_usuario`)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE
+    
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Atividades e tarefas do CRM';
 
---
--- Estrutura para tabela `usuarios`
---
+-- --------------------------------------------------------
+-- Tabela: historicodemensagens
+-- Propósito: Histórico de comunicação com contatos
+-- Depende de: contatos
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `historicodemensagens`;
+CREATE TABLE `historicodemensagens` (
+  `id_mensagem` int NOT NULL AUTO_INCREMENT,
+  `id_contato` int NOT NULL,
+  `tipo_canal` enum('WhatsApp','Email','Chatbot') NOT NULL,
+  `texto_original` text NOT NULL,
+  `sentimento_ia` varchar(10) DEFAULT NULL,
+  `direcao` enum('Entrada','Saida') NOT NULL,
+  `data_hora` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_mensagem`),
+  KEY `idx_msg_contato` (`id_contato`),
+  
+  -- 🔑 FOREIGN KEY: Contato é obrigatório
+  -- ON DELETE CASCADE: Se deletar contato, deleta o histórico também
+  CONSTRAINT `fk_msg_contato` 
+    FOREIGN KEY (`id_contato`) REFERENCES `contatos` (`id_contato`)
+    ON DELETE CASCADE 
+    ON UPDATE CASCADE
+    
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Histórico de mensagens com contatos';
 
-DROP TABLE IF EXISTS `usuarios`;
-CREATE TABLE IF NOT EXISTS `usuarios` (
-  `id_usuario` int NOT NULL AUTO_INCREMENT,
-  `nome` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `senha_hash` varchar(255) NOT NULL,
-  `id_cargo` int NOT NULL,
-  `ativo` tinyint(1) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id_usuario`),
-  UNIQUE KEY `email` (`email`),
-  KEY `id_cargo` (`id_cargo`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- --------------------------------------------------------
+-- Tabela: logsdeauditoria
+-- Propósito: Registro de ações para auditoria
+-- Depende de: usuarios (opcional)
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS `logsdeauditoria`;
+CREATE TABLE `logsdeauditoria` (
+  `id_log` int NOT NULL AUTO_INCREMENT,
+  `id_usuario` int DEFAULT NULL,
+  `data_hora` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `acao` varchar(255) NOT NULL,
+  `detalhes` text,
+  PRIMARY KEY (`id_log`),
+  KEY `idx_log_usuario` (`id_usuario`),
+  
+  -- 🔑 FOREIGN KEY: Usuário pode ser NULL (ações do sistema)
+  -- ON DELETE SET NULL: Se deletar usuário, mantém o log
+  CONSTRAINT `fk_log_usuario` 
+    FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`)
+    ON DELETE SET NULL 
+    ON UPDATE CASCADE
+    
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+COMMENT='Logs de auditoria do sistema';
 
---
--- Despejando dados para a tabela `usuarios`
---
-
-INSERT INTO `usuarios` (`id_usuario`, `nome`, `email`, `senha_hash`, `id_cargo`, `ativo`) VALUES
-(1, 'Administrador', 'admin@agilizacrm.com', '$argon2id$v=19$m=65536,t=3,p=4$7d07R8g55zwnZExpDQEAoA$DJO5SXrBrxMGAla1QEzjUuLaNxQPMgKzTWyX165AUbQ', 1, 1),
-(2, 'João Vendedor', 'vendedor@agilizacrm.com', '$argon2id$v=19$m=65536,t=3,p=4$UWpNSSlFSGltDeE8p7S2tg$NARlAEwtjpp15oyO+efkgq+8TtCp6ua0I8tkpHX4D2k', 2, 1);
+-- ============================================================
+-- REATIVA FOREIGN KEYS E FINALIZA
+-- ============================================================
+SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+-- ============================================================
+-- FIM DO SCRIPT
+-- ============================================================
+-- Para verificar se a migração funcionou, execute:
+-- SHOW TABLE STATUS WHERE Engine = 'InnoDB';
+-- 
+-- Para ver as Foreign Keys criadas:
+-- SELECT TABLE_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME 
+-- FROM information_schema.KEY_COLUMN_USAGE 
+-- WHERE TABLE_SCHEMA = 'agilizacrm' AND REFERENCED_TABLE_NAME IS NOT NULL;
+-- ============================================================

@@ -24,8 +24,7 @@ class MessageResponse(MessageBase):
     data_hora: datetime
     sentimento_ia: Optional[str] = None
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class ConversationItem(BaseModel):
     id_contato: int

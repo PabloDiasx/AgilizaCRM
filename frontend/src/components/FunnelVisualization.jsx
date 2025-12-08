@@ -20,7 +20,7 @@ const FunnelVisualization = ({ stages, opportunities }) => {
             display: 'flex',
             gap: '10px',
             marginBottom: '20px',
-            background: 'white',
+            background: 'var(--white)',
             padding: '20px',
             borderRadius: 'var(--radius)',
             boxShadow: 'var(--shadow)',
@@ -28,16 +28,16 @@ const FunnelVisualization = ({ stages, opportunities }) => {
         }}>
             {metrics.map(stage => (
                 <div key={stage.id_estagio} style={{ flex: 1, minWidth: '120px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '5px' }}>{stage.nome_estagio}</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '5px' }}>{stage.nome_estagio}</div>
                     <div style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--secondary-color)' }}>{stage.count}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#4caf50' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--success)' }}>
                         R$ {stage.totalValue.toLocaleString('pt-BR', { notation: 'compact', maximumFractionDigits: 1 })}
                     </div>
                     {/* Visual Bar */}
                     <div style={{
                         height: '6px',
                         width: '100%',
-                        background: '#eee',
+                        background: 'var(--bar-bg)',
                         marginTop: '10px',
                         borderRadius: '3px',
                         overflow: 'hidden'

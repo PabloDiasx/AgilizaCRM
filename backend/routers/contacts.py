@@ -24,8 +24,7 @@ class ContactResponse(ContactBase):
     data_criacao: datetime
     # We can add more fields like 'responsavel' name later
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 @router.get("/", response_model=List[ContactResponse])
 def read_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(database.get_db), current_user: int = Depends(auth.get_current_user_id)):

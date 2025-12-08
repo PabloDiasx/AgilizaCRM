@@ -5,3 +5,5 @@ pymysql
 python-jose[cryptography]
 passlib[argon2]
 python-multipart
+python-dotenv
+pydantic-settings

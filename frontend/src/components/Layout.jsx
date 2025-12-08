@@ -1,13 +1,17 @@
 import React from 'react';
 import Sidebar from './Sidebar';
-import Header from './Header';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, fullWidth = false }) => {
     return (
         <div style={{ minHeight: '100vh', backgroundColor: 'var(--primary-color)' }}>
             <Sidebar />
-            <Header />
-            <main style={{ marginLeft: '260px', padding: '2rem' }}>
+            <main style={{ 
+                marginLeft: '90px', 
+                padding: fullWidth ? '0' : '1rem 1.5rem',
+                minHeight: '100vh',
+                height: fullWidth ? '100vh' : 'auto',
+                overflow: fullWidth ? 'hidden' : 'auto'
+            }}>
                 {children}
             </main>
         </div>

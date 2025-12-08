@@ -59,7 +59,7 @@ const Marketing = () => {
 
                 {/* Campaigns Panel */}
                 <div>
-                    <div style={{ background: 'white', padding: '1.5rem', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', marginBottom: '2rem' }}>
+                    <div style={{ background: 'var(--white)', padding: '1.5rem', borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', marginBottom: '2rem' }}>
                         <h2 style={{ marginTop: 0 }}>Campanhas Ativas</h2>
 
                         <form onSubmit={handleCreateCampaign} style={{ display: 'flex', gap: '10px', marginBottom: '1.5rem' }}>
@@ -89,7 +89,7 @@ const Marketing = () => {
 
                         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
-                                <tr style={{ background: '#f9f9f9', textAlign: 'left' }}>
+                                <tr style={{ background: 'var(--card-bg)', textAlign: 'left' }}>
                                     <th style={{ padding: '10px' }}>Nome</th>
                                     <th style={{ padding: '10px' }}>Canal</th>
                                     <th style={{ padding: '10px' }}>Status</th>
@@ -98,13 +98,13 @@ const Marketing = () => {
                             </thead>
                             <tbody>
                                 {campaigns.map(c => (
-                                    <tr key={c.id} style={{ borderBottom: '1px solid #eee' }}>
+                                    <tr key={c.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                         <td style={{ padding: '10px' }}>{c.nome_campanha}</td>
                                         <td style={{ padding: '10px' }}>{c.canal}</td>
                                         <td style={{ padding: '10px' }}>
                                             <span style={{
-                                                background: c.status === 'Ativa' ? '#e8f5e9' : '#ffebee',
-                                                color: c.status === 'Ativa' ? 'green' : 'red',
+                                                background: c.status === 'Ativa' ? 'var(--success)' : '#ffebee',
+                                                color: c.status === 'Ativa' ? 'white' : 'red',
                                                 padding: '2px 8px', borderRadius: '4px', fontSize: '0.85rem'
                                             }}>
                                                 {c.status}
